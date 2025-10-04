@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS feedback_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE feedback_db;
+
+CREATE TABLE IF NOT EXISTS feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fio VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL
+);

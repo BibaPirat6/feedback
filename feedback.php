@@ -32,7 +32,7 @@ if (!empty($errors)) {
     exit;
 }
 
-require './php/config/config.php';
+require './config.php';
 
 try {
     $stmt = $pdo->prepare("INSERT INTO feedback (fio, email, message) VALUES (:fio, :email, :message)");

@@ -13,13 +13,22 @@ $fio = trim($data['fio'] ?? '');
 $email = trim($data['email'] ?? '');
 $message = trim($data['message'] ?? '');
 
-$errors = false;
-$fio = trim(htmlspecialchars(strip_tags($data['fio'] ?? ''), ENT_QUOTES, 'UTF-8'));
-$email = trim(htmlspecialchars(strip_tags($data['email'] ?? ''), ENT_QUOTES, 'UTF-8'));
-$message = trim(htmlspecialchars(strip_tags($data['message'] ?? ''), ENT_QUOTES, 'UTF-8'));
+$errors = [];
 
-if ($errors) {
-    echo json_encode(['success' => false, 'message' => "Ошибка валидации"]);
+if (strlen($fio) < 3 || strlen($fio) > 50) {
+    $errors[] = 'Поле ФИО доджно быть от 3 до 50 символов';
+}
+
+if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Укажите корректный Email';
+}
+
+if (strlen($message) < 10 || strlen($message) > 200) {
+    $errors[] = 'Поле сообщения должно содержать от 10 до 200 символов';
+}
+
+if (!empty($errors)) {
+    echo json_encode(['success' => false, 'message' => $errors]);
     exit;
 }
 
@@ -27,10 +36,11 @@ require './php/config/config.php';
 
 try {
     $stmt = $pdo->prepare("INSERT INTO feedback (fio, email, message) VALUES (:fio, :email, :message)");
-    $stmt->bindParam(':fio', $fio, PDO::PARAM_STR);
-    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-    $stmt->bindParam(':message', $message, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([
+        ':fio' => $fio,
+        ':email' => $email,
+        ':message' => $message,
+    ]);
 
     echo json_encode(['success' => true, 'message' => 'Спасибо! Ваше сообщение отправлено.']);
 } catch (PDOException $e) {
